@@ -15,7 +15,7 @@
         <td><?=$brank->id?></td>
         <td><?=$brank->name?></td>
         <td><?=$brank->sort?></td>
-        <td><?=$brank->status?></td>
+        <td><?=\backend\models\Brand::statusOption()[$brank->status]?></td>
         <td><?=\yii\bootstrap\Html::img($brank->logo,['height'=>30])?></td>
         <td><?=\yii\bootstrap\Html::a('修改',['brand/eidt','id'=>$brank->id],['class'=>'glyphicon glyphicon-pencil'])?>
         <?=\yii\bootstrap\Html::a('删除',['brand/del','id'=>$brank->id],['class'=>'glyphicon glyphicon-trash'])?></td>

@@ -20,7 +20,7 @@ class BrandController extends Controller
     public function actionIndex()
     {
         ////分页
-        $query=Brand::find();
+        $query=Brand::find()->where(['<>','status',-1]);
         ///得出数据总条数
         $total=$query->count();
         $pageSize=5;
@@ -63,23 +63,35 @@ class BrandController extends Controller
         $request = new Request();
         if ($request->isPost) {
             $model->load($request->post());
+
             /////创建一个处理文件对象
             $model->imageFile = UploadedFile::getInstance($model, 'imageFile');
-            ////判断数据是否验证成功
-            if ($model->validate()) {
-                /////处理图片
-                $imagePath = \Yii::getAlias('@webroot') . '/upload/' . date('Ymd');
-                if (!is_dir($imagePath)) {
-                    mkdir($imagePath);
+            //var_dump($model->imageFile);exit;
+            if($model->imageFile)
+            {
+                ////判断数据是否验证成功
+                if ($model->validate()) {
+                    /////处理图片
+                    $imagePath = \Yii::getAlias('@webroot') . '/upload/' . date('Ymd');
+                    if (!is_dir($imagePath)) {
+                        mkdir($imagePath);
+                    }
+                    $fileName = '/upload/' . date('Ymd') . '/' . 'brand' . uniqid() . '.' . $model->imageFile->extension;
+                    ////保存图片
+                    $model->imageFile->saveAs(\Yii::getAlias('@webroot') . $fileName, false);
+                    /// 保存图片路径到数据库
+                    $model->logo = $fileName;
+                    $model->save(false);
+                    return $this->redirect(['brand/index']);
                 }
-                $fileName = '/upload/' . date('Ymd') . '/' . 'brand' . uniqid() . '.' . $model->imageFile->extension;
-                ////保存图片
-                $model->imageFile->saveAs(\Yii::getAlias('@webroot') . $fileName, false);
-                /// 保存图片路径到数据库
-                $model->logo = $fileName;
+            }elseif($model->validate())
+            {
                 $model->save(false);
                 return $this->redirect(['brand/index']);
+            }else{
+                var_dump($model->getErrors());exit;
             }
+
         }
         ////添加页面  视图
         return $this->render('add', ['model' => $model]);
@@ -98,24 +110,34 @@ class BrandController extends Controller
             $model->load($request->post());
             /////创建一个处理文件对象
             $model->imageFile = UploadedFile::getInstance($model, 'imageFile');
-            ////判断数据是否验证成功
-            if ($model->validate()) {
-                /////处理图片
-                $imagePath = \Yii::getAlias('@webroot') . '/upload/' . date('Ymd');
-                if (!is_dir($imagePath)) {
-                    mkdir($imagePath);
-                }
-                $fileName = '/upload/' . date('Ymd') . '/' . 'upload' . uniqid() . '.' . $model->imageFile->extension;
-                ////保存图片
-                $model->imageFile->saveAs(\Yii::getAlias('@webroot') . $fileName, false);
-                /// 保存图片路径到数据库
-                $model->logo = $fileName;
+            if($model->imageFile)
+            {
+                ////判断数据是否验证成功
+                if ($model->validate()) {
+                    /////处理图片
+                    $imagePath = \Yii::getAlias('@webroot') . '/upload/' . date('Ymd');
+                    if (!is_dir($imagePath)) {
+                        mkdir($imagePath);
+                    }
+                    $fileName = '/upload/' . date('Ymd') . '/' . 'upload' . uniqid() . '.' . $model->imageFile->extension;
+                    ////保存图片
+                    $model->imageFile->saveAs(\Yii::getAlias('@webroot') . $fileName, false);
+                    /// 保存图片路径到数据库
+                    $model->logo = $fileName;
+                    $model->save(false);
+                    return $this->redirect(['brand/index']);
+            }
+
+            }elseif ($model->validate())
+            {
                 $model->save(false);
                 return $this->redirect(['brand/index']);
+            }else{
+                var_dump($model->getErrors());exit;
             }
-            ////展示修改页面
-            return $this->render('eidt', ['model' => $model]);
         }
+        ////展示修改页面
+        return $this->render('eidt', ['model' => $model]);
     }
 
 
@@ -124,7 +146,9 @@ class BrandController extends Controller
     public function actionDel($id){
         /////获取需要删除的数据
         $brand=Brand::findOne(['id'=>$id]);
-        $brand->delete();
-        return $this->redirect(['brand/index']);
+        $brand->status= -1;
+        $brand->save();
+        //var_dump($brand->getErrors());exit;
+       return $this->redirect(['brand/index']);
     }
 }
