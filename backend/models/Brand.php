@@ -19,6 +19,17 @@ class Brand extends \yii\db\ActiveRecord
     /**
      * @inheritdoc
      */
+    public $code;
+    public $imageFile;////保存处理图片对象
+    public static function statusOption($hidden_del=true)
+    {
+        $status=[-1=>'删除',0=>'隐藏',1=>'正常'];
+        if($hidden_del){
+            unset($status[-1]);
+        }
+        return $status;
+    }
+
     public static function tableName()
     {
         return 'brand';
@@ -33,7 +44,7 @@ class Brand extends \yii\db\ActiveRecord
             [['intro'], 'string'],
             [['sort', 'status'], 'integer'],
             [['name'], 'string', 'max' => 50],
-            [['logo'], 'string', 'max' => 255],
+            ['imageFile','file','extensions'=>['jpg','png','gif'],'skipOnEmpty'=>false]
         ];
     }
 
@@ -44,11 +55,11 @@ class Brand extends \yii\db\ActiveRecord
     {
         return [
             'id' => 'ID',
-            'name' => 'Name',
-            'intro' => 'Intro',
-            'logo' => 'Logo',
-            'sort' => 'Sort',
-            'status' => 'Status',
+            'name' => '名称',
+            'intro' => '简介',
+            'imageFile' => '品牌',
+            'sort' => '排序',
+            'status' => '状态',
         ];
     }
 }

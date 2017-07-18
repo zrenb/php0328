@@ -17,4 +17,3 @@ echo $form->field($model,'code')->widget(\yii\captcha\Captcha::className(),
         'template'=>'<div class="row"><div class="col-lg-1">{image}</div><div class="col-lg-1">{input}</div></div>'])->label('验证码');
 echo \yii\bootstrap\Html::submitButton('添加',['class'=>'btn btn-primary']);
 \yii\bootstrap\ActiveForm::end();
-
