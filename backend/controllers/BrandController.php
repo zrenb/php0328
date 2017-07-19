@@ -13,6 +13,9 @@ use yii\data\Pagination;
 use yii\web\Controller;
 use yii\web\Request;
 use yii\web\UploadedFile;
+use flyok666\uploadifive\UploadAction;
+use flyok666\qiniu\Qiniu;
+
 
 class BrandController extends Controller
 {
@@ -42,16 +45,7 @@ class BrandController extends Controller
     }
 
 
-    public function actions()
-    {
-        return [
-            'captcha' => [
-                'class' => CaptchaAction::className(),
-                'minLength' => 4,
-                'maxLength' => 4,
-            ]
-        ];
-    }
+
 
 
     /////品牌添加
@@ -60,8 +54,13 @@ class BrandController extends Controller
         ////实例化表单组件
         $model = new Brand();
         ////实例化一个request
-        $request = new Request();
-        if ($request->isPost) {
+        //$request = new Request();
+        if($model->load(\Yii::$app->request->post())&& $model->validate())
+        {
+            $model->save();
+            return $this->redirect(['brand/index']);
+        }
+       /* if ($request->isPost) {
             $model->load($request->post());
 
             /////创建一个处理文件对象
@@ -92,7 +91,7 @@ class BrandController extends Controller
                 var_dump($model->getErrors());exit;
             }
 
-        }
+        }*/
         ////添加页面  视图
         return $this->render('add', ['model' => $model]);
     }
@@ -105,7 +104,12 @@ class BrandController extends Controller
         $model = Brand::findOne(['id' => $id]);
 
         ////实例化一个request
-        $request = new Request();
+        if($model->load(\Yii::$app->request->post())&& $model->validate())
+        {
+            $model->save();
+            return $this->redirect(['brand/index']);
+        }
+      /*  $request = new Request();
         if ($request->isPost) {
             $model->load($request->post());
             /////创建一个处理文件对象
@@ -135,14 +139,14 @@ class BrandController extends Controller
             }else{
                 var_dump($model->getErrors());exit;
             }
-        }
+        }*/
         ////展示修改页面
         return $this->render('eidt', ['model' => $model]);
     }
 
 
 
-
+    /////品牌删除
     public function actionDel($id){
         /////获取需要删除的数据
         $brand=Brand::findOne(['id'=>$id]);
@@ -150,5 +154,88 @@ class BrandController extends Controller
         $brand->save();
         //var_dump($brand->getErrors());exit;
        return $this->redirect(['brand/index']);
+    }
+
+
+
+    ////AJAX文件上传
+
+    public function actions() {
+        return [
+            'captcha' => [
+                'class' => CaptchaAction::className(),
+                'minLength' => 4,
+                'maxLength' => 4,
+                         ],
+            's-upload' => [
+                'class' => UploadAction::className(),
+                'basePath' => '@webroot/upload',
+                'baseUrl' => '@web/upload',
+                'enableCsrf' => true, // default
+                'postFieldName' => 'Filedata', // default
+                //BEGIN METHOD
+                //'format' => [$this, 'methodName'],
+                //END METHOD
+                //BEGIN CLOSURE BY-HASH
+                'overwriteIfExist' => true,
+                /*'format' => function (UploadAction $action) {
+                    $fileext = $action->uploadfile->getExtension();
+                    $filename = sha1_file($action->uploadfile->tempName);
+                    return "{$filename}.{$fileext}";
+                },*/
+                //END CLOSURE BY-HASH
+                //BEGIN CLOSURE BY TIME
+                'format' => function (UploadAction $action) {
+                    $fileext = $action->uploadfile->getExtension();
+                    $filehash = sha1(uniqid() . time());
+                    $p1 = substr($filehash, 0, 2);
+                    $p2 = substr($filehash, 2, 2);
+                    return "{$p1}/{$p2}/{$filehash}.{$fileext}";
+                },
+                //END CLOSURE BY TIME
+                'validateOptions' => [
+                    'extensions' => ['jpg', 'png'],
+                    'maxSize' => 1 * 1024 * 1024, //file size
+                ],
+                'beforeValidate' => function (UploadAction $action) {
+                    //throw new Exception('test error');
+                },
+                'afterValidate' => function (UploadAction $action) {},
+                'beforeSave' => function (UploadAction $action) {},
+                'afterSave' => function (UploadAction $action) {
+                   // $action->output['fileUrl'] = $action->getWebUrl();
+                   /* $action->getFilename(); // "image/yyyymmddtimerand.jpg"
+                    $action->getWebUrl(); //  "baseUrl + filename, /upload/image/yyyymmddtimerand.jpg"
+                    $action->getSavePath(); // "/var/www/htdocs/upload/image/yyyymmddtimerand.jpg"*/
+                    $qiniu = new Qiniu(\Yii::$app->params['qiniu']);
+
+                    $qiniu->uploadFile($action->getSavePath(),
+                                        $action->getWebUrl());
+                    $url = $qiniu->getLink($action->getWebUrl());
+                    $action->output['fileUrl'] = $url;
+                },
+            ],
+        ];
+    }
+
+
+    ////检查七牛云
+    public function actionQiniu(){
+
+        $config = [
+            'accessKey'=>'NaAP97HTfr8oVlBi1kyuSiR-8dYgWBdeM2R_DIlB',
+            'secretKey'=>'4cnGwGto07nvqtBCnNxts_tEkMJT_G0BRB-CIMOM',
+            'domain'=>'http://otbpwtldt.bkt.clouddn.com/',
+            'bucket'=>'zrenb',
+            'area'=>Qiniu::AREA_HUADONG
+        ];
+
+
+
+        $qiniu = new Qiniu($config);
+        $key = '/upload/7a/d6/7ad61da36476ef919fa94e44f0ef06be7f182e36.png';
+        $qiniu->uploadFile(\Yii::getAlias('@webroot').'/upload/7a/d6/7ad61da36476ef919fa94e44f0ef06be7f182e36.png',$key);
+        $url = $qiniu->getLink($key);
+       // var_dump($url);
     }
 }
