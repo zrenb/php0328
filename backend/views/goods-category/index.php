@@ -10,7 +10,7 @@
     <?php foreach($categorys as $category):?>
     <tr>
         <td><?=$category->id?></td>
-        <td><?=$category->name?></td>
+        <td><?=str_repeat('———',$category->depth).$category->name?></td>
         <td><?=$category->intro?></td>
         <td><?=\yii\bootstrap\Html::a('修改',['goods-category/eidt','id'=>$category->id],['class'=>'btn btn-primary'])?>
             <?=\yii\bootstrap\Html::a('删除',['goods-category/del','id'=>$category->id],['class'=>'btn btn-warning'])?></td>

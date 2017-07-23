@@ -97,7 +97,7 @@ class GoodsCategoryController extends Controller
     ////商品分类列表
    public function actionIndex()
    {
-       $categorys = GoodsCategory::find()->all();
+       $categorys = GoodsCategory::find()->orderBy('tree,lft')->all();
 
        return $this->render('index',['categorys'=>$categorys]);
    }
@@ -157,6 +157,12 @@ class GoodsCategoryController extends Controller
         $request = new Request();
         if($request->isPost){
             $model->load($request->post());
+            if($model->parent_id==0){
+                \Yii::$app->session->setFlash('warning','此分类下有子分类不能修改');
+                return $this->redirect(['goods-category/index','id'=>$model->id]);
+                return false;
+            }
+            //var_dump($request->post());exit;
             $cats = GoodsCategory::find()->select(['name'])->where(['=','parent_id',$model->parent_id])->all();
             $name = [];
             foreach ($cats as $cat){
@@ -195,9 +201,13 @@ class GoodsCategoryController extends Controller
     {
        ///获取到需要删除的数据
         $category = GoodsCategory::findOne(['id'=>$id]);
+
+        if($category == null){
+            throw new HttpException(404,'分类不存在');
+        }
         $categorys = GoodsCategory::find()->where(['=','parent_id',$category->id])->all();
         if($categorys != 0){
-            \Yii::$app->session->setFlash('warning','此分类有子分类');
+            \Yii::$app->session->setFlash('warning','此分类有子分类,不能被删除');
             return $this->redirect(['goods-category/index']);
             return false;
         }else{
