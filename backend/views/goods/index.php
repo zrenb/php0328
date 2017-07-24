@@ -1,5 +1,26 @@
 <h1>商品列表</h1>
 
+<?php
+$form=\yii\bootstrap\ActiveForm::begin([
+        'layout'=>'inline',
+        'action'=>['goods/index'],
+       // 'action'=>['article/index'],
+        'method'=>'get',
+
+
+]);
+
+echo $form->field($goodSearchForm,'name')->textInput(['placeholder'=>'商品']);
+echo $form->field($goodSearchForm,'sn')->textInput(['placeholder'=>'货号']);
+//echo $form->field($goodSearchForm,'shop_price')->textInput(['placeholder'=>'￥']);
+//echo $form->field($goodSearchForm,'is_on_sale')->radioList(\backend\models\Goods::asleOption(),['placeholder'=>'是否在售']);
+//echo $form->field($goodSearchForm,'status')->radioList(\backend\models\Goods::statusOption(),['placeholder'=>'状态']);
+echo \yii\bootstrap\Html::submitButton('搜索',['class'=>'btn glyphicon glyphicon-search btn-primary']);
+\yii\bootstrap\ActiveForm::end();
+
+
+?>
+
 <?=\yii\bootstrap\Html::a('添加',['goods/add'],['class'=>'btn btn-primary'])?>
 <?=\yii\bootstrap\Html::a('回收站',['goods/trash'],['class'=>'btn btn-warning'])?>
 <table class="table">

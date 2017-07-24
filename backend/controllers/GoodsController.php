@@ -6,6 +6,7 @@ use backend\models\Brand;
 use backend\models\GoodDayCount;
 use backend\models\Goods;
 use backend\models\GoodsCategory;
+use backend\models\GoodSearchForm;
 use backend\models\GoodsGallery;
 use backend\models\GoodsIntro;
 use flyok666\qiniu\Qiniu;
@@ -42,7 +43,7 @@ class GoodsController extends Controller
                 }
                 /////保存商品信息
                 $goods->create_time=time();
-                $goods->sn=date('Ymd') . str_pad(mt_rand(1, 99999), 5, '0', STR_PAD_LEFT);
+                $goods->sn=date('Ymd') . str_pad($goodsCount->count+1, 5, '0', STR_PAD_LEFT);
                 $goods->save();
                 /////保存添加商品数
 
@@ -71,8 +72,30 @@ class GoodsController extends Controller
             ////////商品列表
         public function actionIndex()
             {
+                $goodSearchForm = new GoodSearchForm();
+
+
+                $query=Goods::find();
+                $goodSearchForm->load(\Yii::$app->request->get());
+                if($goodSearchForm->name)
+                {
+                    $query->andWhere(['like','name',$goodSearchForm->name])->orderBy(['sort'=>'desc']);
+                }
+                if($goodSearchForm->sn)
+                {
+                    $query->andWhere(['like','sn',$goodSearchForm->sn])->orderBy(['sort'=>'desc']);
+                }
+                if($goodSearchForm->status)
+                {
+                    $query->andWhere(['like','status',$goodSearchForm->status])->orderBy(['sort'=>'desc']);
+                }
+                if($goodSearchForm->is_on_sale)
+                {
+                    $query->andWhere(['like','is_on_sale',$goodSearchForm->is_on_sale])->orderBy(['sort'=>'desc']);
+                }
+
                 ////分页
-                $query = Goods::find()->where(['<>','status','0'])->orderBy(['sort'=>'desc']);
+
                 $total = $query->count();
                 $pageSize = 5;
                 ////分页工具类
@@ -81,9 +104,9 @@ class GoodsController extends Controller
                     'defaultPageSize'=>$pageSize
                 ]);
                 $goods = $query->limit($pager->limit)->offset($pager->offset)->all();
-                   //$goods = Goods::find()->orderBy(['sort'=>'desc'])->all();
-                    //var_dump($goods);exit;
-                   return $this->render('index',['goods'=>$goods,'pager'=>$pager]);
+                //$goods = Goods::find()->orderBy(['sort'=>'desc'])->all();
+                //var_dump($goods);exit;
+                   return $this->render('index',['goods'=>$goods,'pager'=>$pager,'goodSearchForm'=>$goodSearchForm]);
 
             }
 
@@ -91,6 +114,7 @@ class GoodsController extends Controller
 
     public function actionTrash()
     {
+        $goodSearchForm = new GoodSearchForm();
         ////分页
         $query = Goods::find()->where(['<>','status','1'])->orderBy(['sort'=>'desc']);
         $total = $query->count();
@@ -103,7 +127,7 @@ class GoodsController extends Controller
         $goods = $query->limit($pager->limit)->offset($pager->offset)->all();
         //$goods = Goods::find()->orderBy(['sort'=>'desc'])->all();
         //var_dump($goods);exit;
-        return $this->render('index',['goods'=>$goods,'pager'=>$pager]);
+        return $this->render('index',['goods'=>$goods,'pager'=>$pager,'goodSearchForm'=>$goodSearchForm]);
 
     }
 
@@ -113,6 +137,9 @@ class GoodsController extends Controller
         ///获取到需要修改的数据
         //$goodsIntro = new GoodsIntro();////商品详情
         $goods = Goods::findOne(['id'=>$id]);
+        if($goods==null){
+            throw new NotFoundHttpException('商品不存在');
+        }
         $goodsIntro = GoodsIntro::findOne(['goods_id'=>$id]);
         ////实例化一个request
         $request = new Request();
@@ -133,6 +160,7 @@ class GoodsController extends Controller
                 return $this->redirect(['goods/index']);
             }
         }
+        ////商品分类
         $categorys = GoodsCategory::find()->select(['id','name','parent_id'])->all();////商品分类
         ////视图回显
         return $this->render('add',['goods'=>$goods,'goodsIntro'=>$goodsIntro,'categorys'=>$categorys]);
@@ -145,6 +173,9 @@ class GoodsController extends Controller
     {
         ////获到需要修改的数据
         $good = Goods::findOne(['id'=>$id]);
+        if($good==null){
+            throw new NotFoundHttpException('商品不存在');
+        }
         $good->delete();
         $goodIntro = GoodsIntro::findOne(['goods_id'=>$id]);
         $goodIntro->delete();
@@ -188,6 +219,15 @@ class GoodsController extends Controller
         //echo '<pre>';
         //var_dump($pics);exit;
         return $this->render('pindex',['pics'=>$pics]);
+    }
+
+
+    ////商品图片删除
+    public function actionPdel($id)
+    {
+        $pic = GoodsGallery::findOne(['id'=>$id]);
+        $pic->delete();
+        return $this->redirect(['goods/index']);
     }
 
     ////AJAX文件上传
