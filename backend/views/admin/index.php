@@ -18,10 +18,10 @@
         <td><?=$admin->username?></td>
         <td><?=$admin->email?></td>
         <td><?=\backend\models\Admin::statusOption()[$admin->status]?></td>
-        <td><?=date('Ymd',$admin->created_at)?></td>
-        <td><?=date('Ymd',$admin->updated_at)?></td>
+        <td><?=date('Ymd H:i:s',$admin->created_at)?></td>
+        <td><?=date('Ymd H:i:s',$admin->updated_at)?></td>
         <td><?=date('Ymd H:i:s',$admin->last_login_time)?></td>
-        <td><?=$admin->last_login_ip?></td>
+        <td><?=long2ip($admin->last_login_ip)?></td>
         <td><?=\yii\bootstrap\Html::a('修改',['admin/eidt','id'=>$admin->id],['class'=>'btn btn-info'])?>
             <?=\yii\bootstrap\Html::a('删除',['admin/del','id'=>$admin->id],['class'=>'btn btn-warning'])?></td>
     </tr>

@@ -36,6 +36,10 @@ AppAsset::register($this);
     ]);
     $menuItems = [
         ['label' => '管理员首页', 'url' => ['admin/index']],
+        ['label' => '商品首页', 'url' => ['goods/index']],
+        ['label' => '品牌首页', 'url' => ['brand/index']],
+        ['label' => '商品分类', 'url' => ['goods-category/index']],
+        ['label' => '修改密码', 'url' => ['admin/chpw']],
 
     ];
     if (Yii::$app->user->isGuest) {

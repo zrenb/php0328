@@ -3,10 +3,13 @@
 namespace backend\controllers;
 
 use backend\models\Admin;
+use backend\models\ChpwForm;
 use backend\models\LoginForm;
 use yii\captcha\CaptchaAction;
+use yii\helpers\ArrayHelper;
 use yii\web\Controller;
 use yii\web\HttpException;
+use yii\web\NotFoundHttpException;
 use yii\web\Request;
 
 class AdminController extends Controller
@@ -33,17 +36,33 @@ class AdminController extends Controller
     //管理员添加
     public function actionAdd()
     {
-        $model=new Admin();
+        $model=new Admin(['scenario'=>Admin::SCENARIO_ADD]);
         ////接收表单数据并保存
        $request = new Request();
        if($request->isPost)
        {
+           //var_dump($request->post());exit;
            $model->load($request->post());
            if($model->validate())
            {
+
+               //var_dump($model->role);exit;
                ////用户名加密
-               $model->password = \Yii::$app->security->generatePasswordHash($model->password);
+               $model->password_hash = \Yii::$app->security->generatePasswordHash($model->password);
+               $model->status = 1;
+               $model->auth_key = \Yii::$app->security->generateRandomString();
                $model->save(false);
+                //添加角色
+               $authManager = \Yii::$app->authManager;
+               if(is_array($model->roles))
+               {
+                   foreach ($model->roles as $role){
+                       $role = $authManager->getRole($role);
+                       $authManager->assign($role,$model->id);
+                   }
+               }
+
+
                return $this->redirect(['admin/index']);
            }
        }
@@ -55,20 +74,34 @@ class AdminController extends Controller
     public function actionEidt($id)
     {
         $model = Admin::findOne(['id'=>$id]);
-        ////接收修改后的表单数据并保存
-        $request = new Request();
-        if($request->isPost)
+        $authManager = \Yii::$app->authManager;
+        $roles = $authManager->getRolesByUser($id);
+       /* var_dump($id);
+        var_dump($roles);exit;*/
+       $model->roles=$roles;
+
+        if($model == null )
         {
-            $model->load($request->post());
-            if($model->validate())
+            throw new NotFoundHttpException('你需修改的数据不存在');
+        }else{
+            ////接收修改后的表单数据并保存
+            $request = new Request();
+            if($request->isPost)
             {
-                ////用户名加密
-                $model->password = \Yii::$app->security->generatePasswordHash($model->password);
-                $model->save(false);
-                return $this->redirect(['admin/index']);
+                //var_dump($model);exit;
+                $model->load($request->post());
+                if($model->validate())
+                {
+                    ////用户名加密
+                    $model->password_hash = \Yii::$app->security->generatePasswordHash($model->password);
+                    $model->save(false);
+                    //修改管理员的角色
+                    return $this->redirect(['admin/index']);
+                }
             }
+            return $this->render('add',['model'=>$model]);
         }
-        return $this->render('add',['model'=>$model]);
+
     }
 
 
@@ -78,8 +111,18 @@ class AdminController extends Controller
     {
         ////接收需要删除的管理员数据
         $admin = Admin::findOne(['id'=>$id]);
-        $admin->delete();
-        return $this->redirect(['admin/index']);
+
+        if($admin == null)
+        {
+            throw new NotFoundHttpException('你需删除的数据不存在');
+        }else{
+            $admin->delete();
+            $authManager = \Yii::$app->authManager;
+            $roles = $authManager->getRolesByUser($id);
+            $authManager->removeChildren($roles);
+            return $this->redirect(['admin/index']);
+        }
+
     }
 
 
@@ -137,7 +180,47 @@ class AdminController extends Controller
     }
 
 
-    //自动登录
+    //修改密码
+    public function actionChpw()
+    {
+        if($admin=\Yii::$app->user->identity)
+        {
+            $model = new ChpwForm();
+
+            //实例化request
+            $request = new Request();
+            if($model->load($request->post()) && $model->validate())
+            {
+                //var_dump($request->post());exit;
+
+               // var_dump($model);exit;
+                if(\Yii::$app->security->validatePassword($model->oldPassword,$admin->password_hash))
+                {
+                    if(!\Yii::$app->security->validatePassword($model->newPassword,$admin->password_hash))
+                    {
+                        if($model->newPassword === $model->okPassword)
+                        {
+                            $admin->password_hash = \Yii::$app->security->generatePasswordHash($model->newPassword);
+
+                            $admin->save();
+                            \Yii::$app->session->setFlash('success','修改成功，请重新登录');
+                           return $this->redirect(['admin/login']);
+                        }else{
+                             $model->addError('newPassword','新密码和确认密码不一致');
+                        }
+                    }else{
+                         $model->addError('newPassword','新密码不能和旧密码一样');
+                    }
+                }else{
+                     $model->addError('oldPassword','旧密码不正确');
+                }
+            }
+
+
+            return $this->render('chpw',['model'=>$model,'admin'=>\Yii::$app->user->identity]);
+        }
+        return $this->redirect(['admin/login']);
+    }
 
 
 }
