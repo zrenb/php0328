@@ -34,14 +34,33 @@ AppAsset::register($this);
             'class' => 'navbar-inverse navbar-fixed-top',
         ],
     ]);
-    $menuItems = [
+/*    $menuItems = [
         ['label' => '管理员首页', 'url' => ['admin/index']],
         ['label' => '商品首页', 'url' => ['goods/index']],
         ['label' => '品牌首页', 'url' => ['brand/index']],
         ['label' => '商品分类', 'url' => ['goods-category/index']],
         ['label' => '修改密码', 'url' => ['admin/chpw']],
 
-    ];
+    ];*/
+   $menuItems=[];
+    $menus = \backend\models\Menu::findAll(['parent_id'=>0]);
+    foreach ($menus as $menu){
+
+        $items=[];
+        foreach ($menu->children as $child){
+
+            //判断登录用户是否有权限
+            if(Yii::$app->user->can($child->url)){
+                $items[]=['label' => $child->label, 'url' => [$child->url]];
+            }
+        }
+        //没有子菜单  不显示一级菜单
+        if(!empty($items)){
+            $menuItems[] = ['label'=>$menu->label,'items'=>$items];
+        }
+
+    }
+
     if (Yii::$app->user->isGuest) {
         $menuItems[] = ['label' => '登录', 'url' => ['admin/login']];
     } else {

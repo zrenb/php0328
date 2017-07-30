@@ -7,6 +7,7 @@
  */
 namespace backend\controllers;
 
+use backend\filters\RbacFilter;
 use backend\models\GoodsCategory;
 use yii\web\Controller;
 use yii\web\Request;
@@ -99,6 +100,8 @@ class GoodsCategoryController extends Controller
    {
        $categorys = GoodsCategory::find()->orderBy('tree,lft')->all();
 
+
+
        return $this->render('index',['categorys'=>$categorys]);
    }
 
@@ -108,6 +111,7 @@ class GoodsCategoryController extends Controller
    public function actionAdd()
    {
        $model = new GoodsCategory(['parent_id'=>0]);
+       $model->scenario=GoodsCategory::EVENT_ADD;
        ///实例化一个request
        $request = new Request();
        if($request->isPost){
@@ -143,7 +147,7 @@ class GoodsCategoryController extends Controller
        }
 
        $categorys = GoodsCategory::find()->select(['id','parent_id','name'])->asArray()->all();
-       return $this->render('add',['model'=>$model,'categorys'=>$categorys]);
+       return $this->render('eidt',['model'=>$model,'categorys'=>$categorys]);
    }
 
 
@@ -214,5 +218,18 @@ class GoodsCategoryController extends Controller
             $category->delete();
         }
 
+    }
+
+
+
+
+    //过滤器
+    public function behaviors()
+    {
+        return [
+            'rbac'=>[
+                'class'=>RbacFilter::className(),
+            ]
+        ];
     }
 }

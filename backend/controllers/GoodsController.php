@@ -2,6 +2,7 @@
 
 namespace backend\controllers;
 
+use backend\filters\RbacFilter;
 use backend\models\Brand;
 use backend\models\GoodDayCount;
 use backend\models\Goods;
@@ -22,6 +23,7 @@ class GoodsController extends Controller
     public function actionAdd()
     {
         $goods = new Goods(); ////实例化表单模型
+        $goods->scenario=Goods::EVENT_ADD;
         $goodsIntro = new GoodsIntro();////商品详情
         $request = new Request();////实例化request
         if($request->isPost)
@@ -299,6 +301,15 @@ class GoodsController extends Controller
                     $action->output['fileUrl'] = $url;
                 },
             ],
+        ];
+    }
+    //过滤器
+    public function behaviors()
+    {
+        return [
+            'rbac'=>[
+                'class'=>RbacFilter::className()
+            ]
         ];
     }
 

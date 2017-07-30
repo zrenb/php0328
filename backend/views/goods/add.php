@@ -1,5 +1,5 @@
+<h1>商品<?=$goods->scenario == \backend\models\Goods::EVENT_ADD?'添加':'修改'?></h1>
 <?php
-
 use yii\web\JsExpression;
 
 $form = \yii\bootstrap\ActiveForm::begin();

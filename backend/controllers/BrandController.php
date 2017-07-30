@@ -7,6 +7,7 @@
  */
 namespace backend\controllers;
 
+use backend\filters\RbacFilter;
 use backend\models\Brand;
 use yii\captcha\CaptchaAction;
 use yii\data\Pagination;
@@ -237,5 +238,16 @@ class BrandController extends Controller
         $qiniu->uploadFile(\Yii::getAlias('@webroot').'/upload/7a/d6/7ad61da36476ef919fa94e44f0ef06be7f182e36.png',$key);
         $url = $qiniu->getLink($key);
        // var_dump($url);
+    }
+
+
+    public function behaviors()
+    {
+        return [
+            'rbac'=>[
+                'class'=>RbacFilter::className(),
+                'except'=>['captcha'],
+            ]
+        ];
     }
 }

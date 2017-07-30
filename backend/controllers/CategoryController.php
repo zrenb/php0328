@@ -8,6 +8,7 @@
 namespace backend\controllers;
 
 
+use backend\filters\RbacFilter;
 use backend\models\Category;
 use yii\data\Pagination;
 use yii\web\Controller;
@@ -95,5 +96,16 @@ class CategoryController extends Controller
         $category->status=-1;
         $category->save();
         return $this->redirect(['category/index']);
+    }
+
+
+    //过滤器
+    public function behaviors()
+    {
+        return [
+            'rbac'=>[
+                'class'=>RbacFilter::className(),
+            ]
+        ];
     }
 }

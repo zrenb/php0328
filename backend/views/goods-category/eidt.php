@@ -1,3 +1,4 @@
+<h1>商品分类<?=$model->scenario ==\backend\models\GoodsCategory::EVENT_ADD?'添加':'修改'?></h1>
 <?php
 /**
  * @var $this\yii\web\View

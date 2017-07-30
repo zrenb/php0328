@@ -2,6 +2,7 @@
 
 namespace backend\controllers;
 
+use backend\filters\RbacFilter;
 use backend\models\Admin;
 use backend\models\ChpwForm;
 use backend\models\LoginForm;
@@ -30,6 +31,7 @@ class AdminController extends Controller
                 'minLength'=>4,
                 'maxLength'=>4,
             ]
+
         ];
     }
 
@@ -76,9 +78,8 @@ class AdminController extends Controller
         $model = Admin::findOne(['id'=>$id]);
         $authManager = \Yii::$app->authManager;
         $roles = $authManager->getRolesByUser($id);
-       /* var_dump($id);
-        var_dump($roles);exit;*/
-       $model->roles=$roles;
+
+       $model->roles=ArrayHelper::map($roles,'name','name');
 
         if($model == null )
         {
@@ -96,6 +97,14 @@ class AdminController extends Controller
                     $model->password_hash = \Yii::$app->security->generatePasswordHash($model->password);
                     $model->save(false);
                     //修改管理员的角色
+                    if(is_array($model->roles))
+                    {
+                        $authManager->revokeAll($id);
+                        foreach ($model->roles as $roleName){
+                            $role = $authManager->getRole($roleName);
+                            $authManager->assign($role,$model->id);
+                        }
+                    }
                     return $this->redirect(['admin/index']);
                 }
             }
@@ -118,8 +127,7 @@ class AdminController extends Controller
         }else{
             $admin->delete();
             $authManager = \Yii::$app->authManager;
-            $roles = $authManager->getRolesByUser($id);
-            $authManager->removeChildren($roles);
+            $authManager->revokeAll($id);
             return $this->redirect(['admin/index']);
         }
 
@@ -223,4 +231,14 @@ class AdminController extends Controller
     }
 
 
+    //过滤器
+       public function behaviors()
+       {
+           return [
+               'rbac'=>[
+                   'class'=>RbacFilter::className(),
+                   'except'=>['login','logout','captcha'],
+               ]
+           ];
+       }
 }

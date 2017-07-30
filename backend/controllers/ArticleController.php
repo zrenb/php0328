@@ -8,6 +8,7 @@
 namespace backend\controllers;
 
 
+use backend\filters\RbacFilter;
 use backend\models\Article;
 use backend\models\ArticleDetail;
 use yii\data\Pagination;
@@ -162,5 +163,15 @@ class ArticleController extends Controller
         $article = Article::findOne(['id'=>$id]);
          $article->delete();
         return $this->redirect(['article/trash']);
+    }
+
+    //过滤器
+   public function behaviors()
+    {
+        return [
+            'rbac'=>[
+                'class'=>RbacFilter::className(),
+            ]
+        ];
     }
 }
