@@ -10,9 +10,9 @@
     <link rel="stylesheet" href="<?=Yii::getAlias('@web')?>/style/bottomnav.css" type="text/css">
     <link rel="stylesheet" href="<?=Yii::getAlias('@web')?>/style/footer.css" type="text/css">
 
-    <script type="text/javascript" src="js/jquery-1.8.3.min.js"></script>
-    <script type="text/javascript" src="js/header.js"></script>
-    <script type="text/javascript" src="js/index.js"></script>
+    <script type="text/javascript" src="<?=Yii::getAlias('@web')?>/js/jquery-1.8.3.min.js"></script>
+    <script type="text/javascript" src="<?=Yii::getAlias('@web')?>/js/header.js"></script>
+    <script type="text/javascript" src="<?=Yii::getAlias('@web')?>/js/index.js"></script>
 </head>
 <body>
 <!-- 顶部导航 start -->
@@ -23,7 +23,7 @@
         </div>
         <div class="topnav_right fr">
             <ul>
-                <li>您好，欢迎来到京西！[<a href="login-member">登录</a>] [<a href="register.html">免费注册</a>] </li>
+                <li>您好，欢迎来到京西！[<a href="login-member">登录</a>] [<a href="register-">免费注册</a>] </li>
                 <li class="line">|</li>
                 <li>我的订单</li>
                 <li class="line">|</li>
@@ -80,7 +80,7 @@
                         <ul class="list1 fl">
                             <li><a href="">用户信息></a></li>
                             <li><a href="">我的订单></a></li>
-                            <li><a href="">收货地址></a></li>
+                            <li><a href="adres">收货地址></a></li>
                             <li><a href="">我的收藏></a></li>
                         </ul>
 
