@@ -51,12 +51,12 @@
            <!-- <form action="" method="post">-->
             <?php $form=\yii\widgets\ActiveForm::begin(['id'=>'login_form'])?>
                 <ul>
-                    <li>
+                    <li id="li_username">
                         <label for="">用户名：</label>
                         <input type="text" class="txt" name="LoginForm[username]" />
                         <p> </p>
                     </li>
-                    <li>
+                    <li id="li_password">
                         <label for="">密码：</label>
                         <input type="password" class="txt" name="LoginForm[password]" />
                         <a href="">忘记密码?</a>
@@ -142,16 +142,16 @@
             //console.debug(data);
             //console.log(data);
            var json = JSON.parse(data);
-            //console.log(json);
+            console.log(json.status);
             if(json.status){
                 alert('登录成功');
                 //跳转到登录页
-                window.location.href="/member/index-member";
+                window.location.href="/goods/index";
             }else{
                 alert('登录失败');
                 //登录失败 显示错误信息
                 //"msg":{"username":["Username cannot be blank."]}}
-               /*$(json.msg).each(function(i,errors){
+               $(json.msg).each(function(i,errors){
                     //console.debug(errors);
                     console.log(errors);
                     //var error_msg = '';
@@ -159,12 +159,12 @@
                     $.each(errors,function(name,error){
                         //name =>"username"
                         //error => ["Username cannot be blank."]
-                        alert(error);
+                        //alert(error);
 
                         $("#li_"+name+" p").text(error.join(","));
                     });
 
-                });*/
+                });
             }
         });
     });

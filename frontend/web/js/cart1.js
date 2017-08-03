@@ -24,6 +24,10 @@ $(function(){
 		});
 
 		$("#total").text(total.toFixed(2));
+
+        var goods_id = $(this).closest('tr').attr('data-id');
+        //console.log(goods_id);
+        changeNum(goods_id,amount.val())
 	});
 
 	//增加
@@ -40,6 +44,9 @@ $(function(){
 		});
 
 		$("#total").text(total.toFixed(2));
+        var goods_id = $(this).closest('tr').attr('data-id');
+        //console.log(goods_id);
+        changeNum(goods_id,amount.val())
 	});
 
 	//直接输入
@@ -59,5 +66,17 @@ $(function(){
 
 		$("#total").text(total.toFixed(2));
 
+        var goods_id = $(this).closest('tr').attr('data-id');
+        //console.log(goods_id);
+        changeNum(goods_id,$(this).val())
 	});
 });
+
+
+//自定义一个函数
+
+var changeNum = function (goods_id,amount) {
+	$.post('change-num',{goods_id:goods_id,amount:amount},function (data) {
+		console.log(data);
+    })
+}

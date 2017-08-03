@@ -9,6 +9,7 @@ use backend\models\Goods;
 use backend\models\GoodsCategory;
 use backend\models\GoodSearchForm;
 use backend\models\GoodsGallery;
+use backend\models\GoodsPic;
 use backend\models\GoodsIntro;
 use flyok666\qiniu\Qiniu;
 use flyok666\uploadifive\UploadAction;
@@ -190,14 +191,17 @@ class GoodsController extends Controller
     ////商品图片添加
     public function actionPic($goods_id)
     {
-        $model = new GoodsGallery();
+      /*  $model = new GoodsPic();*/
+      $model = new GoodsGallery();
         ////获取到需要添加pic的商品
         $good = Goods::findOne(['id'=>$goods_id]);
         ////实例化request
         $request = new Request();
         if($request->isPost)
         {
+            //var_dump($request->post());exit;
             $model->load($request->post());
+            //var_dump($request->post());exit;
             if($model->validate())
             {
                 $model->goods_id=$good->id;
@@ -246,36 +250,21 @@ class GoodsController extends Controller
                 'config' => [
                     "imageUrlPrefix"  => "http://admin.yii2shop.com",//图片访问路径前缀
                     "imagePathFormat" => "/upload/image/{yyyy}{mm}{dd}/{time}{rand:6}",//上传保存路径
-                "imageRoot" => \yii::getAlias("@webroot"),
+                    "imageRoot" => \yii::getAlias("@webroot"),
+                ],
             ],
-        ],
             's-upload' => [
                 'class' => UploadAction::className(),
                 'basePath' => '@webroot/upload',
                 'baseUrl' => '@web/upload',
                 'enableCsrf' => true, // default
                 'postFieldName' => 'Filedata', // default
-                //BEGIN METHOD
-                //'format' => [$this, 'methodName'],
-                //END METHOD
-                //BEGIN CLOSURE BY-HASH
                 'overwriteIfExist' => true,
-                /*'format' => function (UploadAction $action) {
-                    $fileext = $action->uploadfile->getExtension();
-                    $filename = sha1_file($action->uploadfile->tempName);
-                    return "{$filename}.{$fileext}";
-                },*/
-                //END CLOSURE BY-HASH
-                //BEGIN CLOSURE BY TIME
                 'format' => function (UploadAction $action) {
                     $fileext = $action->uploadfile->getExtension();
                     $filehash = sha1(uniqid() . time());
-                    //$p1 = '/goods/'.date('Ymd');
                     $p1 = substr($filehash, 0, 2);
                     $p2 = substr($filehash, 2, 2);
-                    /*if(!is_dir($p1)){
-                        mkdir($p1);
-                    }*/
                     return "{$p1}/{$p2}/{$filehash}.{$fileext}";
                 },
                 //END CLOSURE BY TIME
@@ -294,24 +283,24 @@ class GoodsController extends Controller
                      $action->getWebUrl(); //  "baseUrl + filename, /upload/image/yyyymmddtimerand.jpg"
                      $action->getSavePath(); // "/var/www/htdocs/upload/image/yyyymmddtimerand.jpg"*/
                     $qiniu = new Qiniu(\Yii::$app->params['qiniu']);
-
-                    $qiniu->uploadFile($action->getSavePath(),
-                        $action->getWebUrl());
+                    $qiniu->uploadFile($action->getSavePath(), $action->getWebUrl());
                     $url = $qiniu->getLink($action->getWebUrl());
+                    //var_dump($url);exit;
                     $action->output['fileUrl'] = $url;
                 },
             ],
         ];
     }
-    //过滤器
-    public function behaviors()
+   //过滤器
+   /* public function behaviors()
     {
         return [
             'rbac'=>[
-                'class'=>RbacFilter::className()
+                'class'=>RbacFilter::className(),
+                'except'=>['pindex','pic','pdel'],
             ]
         ];
-    }
+    }*/
 
 
 }

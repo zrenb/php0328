@@ -20,7 +20,7 @@ class RbacFilter extends ActionFilter
         //判断用户是否有权利
         if(!\Yii::$app->user->can($action->uniqueId))
         {
-            throw  new ForbiddenHttpException('403','你没权限操作');
+            throw  new ForbiddenHttpException('你没权限操作');
         }
         // parent::beforeAction($action); // 是指放行的意思 相当于return true   相反就是return false
         return parent::beforeAction($action);

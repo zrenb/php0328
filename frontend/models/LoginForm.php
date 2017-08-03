@@ -40,10 +40,27 @@ class LoginForm extends Model
     }
     public function validatePassword()
     {
-        $member = Member::findOne(['username' => $this->username]);
+        $member = Member::findOne(['username' => $this->password]);
         if (!\Yii::$app->security->validatePassword($this->password, $member->password_hash))
         {
             return $this->addError('password','密码不正确');
         }
     }
+
+
+
+    //登录的时候讲cookie的数据同步到数据表中
+  /*  public function cart()
+    {
+        $cookie = \Yii::$app->request->cookies;
+        $cart = $cookie->get('cat');         //获取到cookie的数据
+        if($cart) {
+            $carts = unserialize($cart->value());
+            foreach ($carts as $goods_id=>$amount){
+                if(){
+
+                }
+            }
+        }
+    }*/
 }
