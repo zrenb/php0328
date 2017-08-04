@@ -40,7 +40,7 @@ class LoginForm extends Model
     }
     public function validatePassword()
     {
-        $member = Member::findOne(['username' => $this->password]);
+        $member = Member::findOne(['username' => $this->username]);
         if (!\Yii::$app->security->validatePassword($this->password, $member->password_hash))
         {
             return $this->addError('password','密码不正确');

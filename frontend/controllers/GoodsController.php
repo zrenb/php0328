@@ -10,6 +10,7 @@ use frontend\models\Cart;
 use yii\helpers\ArrayHelper;
 use yii\web\Controller;
 use yii\web\Cookie;
+use backend\models\GoodsGallery;
 
 class GoodsController extends Controller
 {
@@ -70,7 +71,7 @@ class GoodsController extends Controller
         //商品详情
     public function actionGood($id)
     {
-        $goodPices = GoodsPic::find()->where(['=','goods_id',$id])->all();
+        $goodPices = GoodsGallery::find()->where(['=','goods_id',$id])->all();
         $good = Goods::findOne(['id'=>$id]);
         //var_dump($good);
         return $this->render('good',['goodPices'=>$goodPices,'good'=>$good]);
