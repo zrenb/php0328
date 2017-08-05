@@ -62,11 +62,15 @@
                         <a href="">忘记密码?</a>
                         <p> </p>
                     </li>
-                    <li class="checkcode" id="li_code">
+                  <!--  <li class="checkcode" id="li_code">
                         <label for="">验证码：</label>
                         <input type="text"  name="LoginForm[code]" />
-                        <img src="<?=Yii::getAlias('@web')?>/site/captcha" alt="点击更换图片" id="img-code" />
+                        <img src="<?/*=Yii::getAlias('@web')*/?>/site/captcha" alt="点击更换图片" id="img-code" />
                         <span>看不清？<a href="">换一张</a></span>
+                    </li>-->
+                    <li class="checkcode" id="li_code">
+                        <?=$form->field($model,'code')->widget(\yii\captcha\Captcha::className(),['captchaAction'=>'member/captcha'])?>
+                        <p></p>
                     </li>
                     <li>
                         <label for="">&nbsp;</label>
@@ -148,7 +152,7 @@
                 //跳转到登录页
                 window.location.href="/goods/index";
             }else{
-                alert('登录失败');
+                //alert('登录失败');
                 //登录失败 显示错误信息
                 //"msg":{"username":["Username cannot be blank."]}}
                $(json.msg).each(function(i,errors){
@@ -171,9 +175,9 @@
 
 
     //更换验证码
-    $("#img-code").click(function(){
-        $.getJSON('/site/captcha?refresh=1',function(json){
-            $("#img-code").attr('src',json.url);
+    $("#loginform-code-image").click(function(){
+        $.getJSON('/member/captcha?refresh=1',function(json){
+            $("#loginform-code-image").attr('src',json.url);
             //console.log(json.url);
         });
     });

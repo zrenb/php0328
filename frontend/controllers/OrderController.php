@@ -86,7 +86,7 @@ class OrderController extends Controller
                         //var_dump($order->getErrors());exit;
                         //保存商品订单详情
                         $order_goods = new OrderGoods();
-                        $order_goods->order_id=rand(100000,999999);
+                        $order_goods->order_id=$order->id;
                         $order_goods->goods_id=$good->id;
                         $order_goods->goods_name=$good->name;
                         $order_goods->LOGO=$good->LOGO;
@@ -103,15 +103,24 @@ class OrderController extends Controller
                 }
                 //提交事务
                 $tsanction->commit();
+               // return Json::encode('success','交易成功');
+
             }catch (Exception $e){
                $tsanction->rollBack(); //回滚
+                return Json::encode(['status' => false, 'msg' => '交易失败']);
             }
            Cart::deleteAll(['member_id'=>$member_id]); //清空购物车数据
-
+            return Json::encode(['status' => true, 'msg' => '交易成功']);
         }
-        return $this->redirect('pay_success');
     }
     public function actionPaySuccess(){
-        return $this->redirect('success');
+        return $this->render('success');
+    }
+    public function actionList()
+    {
+        $member_id = \Yii::$app->user->id;
+        $model = new Order();
+        $goods = Order::find()->where(['=','member_id',$member_id])->all();
+        var_dump($goods);
     }
 }

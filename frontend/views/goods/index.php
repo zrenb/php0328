@@ -23,7 +23,7 @@
         </div>
         <div class="topnav_right fr">
             <ul>
-                <li>您好，欢迎来到京西！[<a href="login-member">登录</a>] [<a href="register-">免费注册</a>] </li>
+                <li>您好，欢迎来到京西！[<a href="<?=\yii\helpers\Url::to(['member/login-member'])?>">登录</a>] [<a href="<?=\yii\helpers\Url::to(['member/regist-member'])?>">免费注册</a>] </li>
                 <li class="line">|</li>
                 <li>我的订单</li>
                 <li class="line">|</li>
@@ -80,7 +80,7 @@
                         <ul class="list1 fl">
                             <li><a href="">用户信息></a></li>
                             <li><a href="">我的订单></a></li>
-                            <li><a href="adres">收货地址></a></li>
+                            <li><a href="<?=\yii\helpers\Url::to(['member/address-index'])?>">收货地址></a></li>
                             <li><a href="">我的收藏></a></li>
                         </ul>
 

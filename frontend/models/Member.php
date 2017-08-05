@@ -75,8 +75,19 @@ class Member extends \yii\db\ActiveRecord implements IdentityInterface
             'updated_at' => '修改时间',
             'pwd' => '密码',
             'repwd' => '确认密码',
-            'code' => '验证码',
+            'code' => '码',
+            'tel_code'=>'手机验证码'
         ];
+    }
+
+
+    public function validateTelCode()
+    {
+        $member = Member::findOne(['username' => $this->username]);
+        if (\Yii::$app->session->get('code_'.$member->tel) != $member->tel_code);
+        {
+            return $this->addError('tel_code','手机验证码不正确');
+        }
     }
 
     /**

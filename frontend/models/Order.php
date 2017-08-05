@@ -93,4 +93,9 @@ class Order extends \yii\db\ActiveRecord
             'create_time' => 'Create Time',
         ];
     }
+
+    public function getOrders()
+    {
+        return $this->hasMany(OrderGoods::className(),['order_id'=>'id']);
+    }
 }

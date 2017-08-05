@@ -111,7 +111,7 @@
         <div class="cart fl">
             <dl>
                 <dt>
-                    <a href="">去购物车结算</a>
+                    <a href="<?=\yii\helpers\Url::to(['goods/show-cart'])?>">去购物车结算</a>
                     <b></b>
                 </dt>
                 <dd>
@@ -406,7 +406,7 @@
 
         <div class="navitems fl">
             <ul class="fl">
-                <li class="current"><a href="">首页</a></li>
+                <li class="current"><a href="<?=\yii\helpers\Url::to(['goods/index'])?>">首页</a></li>
                 <li><a href="">电脑频道</a></li>
                 <li><a href="">家用电器</a></li>
                 <li><a href="">品牌大全</a></li>
@@ -427,7 +427,7 @@
 <div class="list w1210 bc mt10">
     <!-- 面包屑导航 start -->
     <div class="breadcrumb">
-        <h2>当前位置：<a href="">首页</a> > <a href="">电脑、办公</a></h2>
+        <h2>当前位置：<a href="<?=\yii\helpers\Url::to(['goods/index'])?>">首页</a> > <a href="">电脑、办公</a></h2>
     </div>
     <!-- 面包屑导航 end -->
 

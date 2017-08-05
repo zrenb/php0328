@@ -162,8 +162,12 @@ class MemberController extends \yii\web\Controller
     //收货地址列表
     public function actionAddressIndex()
     {
+        $member_id = \Yii::$app->user->id;
+        if($member_id == null){
+            return $this->redirect(['member/login-member']);
+        }
         $model = new Abres();
-        $addresses = Abres::find()->all();
+        $addresses = Abres::find()->where(['=','user_id',$member_id])->all();
         //var_dump($addresses);
         return $this->render('index-address',['model'=>$model,'addresses'=>$addresses]);
 

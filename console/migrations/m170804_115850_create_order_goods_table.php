@@ -5,7 +5,7 @@ use yii\db\Migration;
 /**
  * Handles the creation of table `order_goods`.
  */
-class m170803_080353_create_order_goods_table extends Migration
+class m170804_115850_create_order_goods_table extends Migration
 {
     /**
      * @inheritdoc
@@ -17,15 +17,15 @@ class m170803_080353_create_order_goods_table extends Migration
             //id	primaryKey
             //order_id	int	订单id
             'order_id'=>$this->integer()->comment('订单id'),
-           // goods_id	int	商品id
+            // goods_id	int	商品id
             'goods_id'=>$this->integer()->comment('商品id'),
-           // goods_name	varchar(255)	商品名称
+            // goods_name	varchar(255)	商品名称
             'goods_name'=>$this->string(255)->comment('商品名称'),
-           // logo	varchar(255)	图片
+            // logo	varchar(255)	图片
             'LOGO'=>$this->string(255)->comment('图片'),
-           // price	decimal	价格
+            // price	decimal	价格
             'price'=>$this->decimal(11,2)->comment('价格'),
-           // amount	int	数量
+            // amount	int	数量
             'amount'=>$this->integer()->comment('数量'),
             //total	decimal
             'total'=>$this->decimal(11,2)->comment('小计')

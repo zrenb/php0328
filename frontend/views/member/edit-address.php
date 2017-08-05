@@ -25,14 +25,11 @@
         </div>
         <div class="topnav_right fr">
             <ul>
-                <li>您好，欢迎来到京西！
-                    <?php if(Yii::$app->user->isGuest):?>
-                        [<?=\yii\helpers\Html::a('登录',['user/logout'])?>]
-                        [<?=\yii\helpers\Html::a('免费注册',['user/logout'])?>]
-                    <?php else:?>
-                        [<?=\yii\helpers\Html::a('注销',['user/logout'])?>]
-                    <?php endif;?>
-                </li>
+                        <li>您好，欢迎来到京西！[<a href="<?=\yii\helpers\Url::to(['member/login-member'])?>">登录</a>] [<a href="<?=\yii\helpers\Url::to(['member/regist-member'])?>">免费注册</a>] </li>
+                        <li class="line">|</li>
+                        <li>我的订单</li>
+                        <li class="line">|</li>
+                        <li>客户服务</li>
                 <li class="line">|</li>
                 <li>我的订单</li>
                 <li class="line">|</li>

@@ -250,7 +250,17 @@
         var address = $('input[name="address_id"]:checked ').val();
         var delivery = $('input[name="delivery"]:checked ').val();
         var pay = $('input[name="pay"]:checked ').val();
-       $.post('place-order',{'Order[address_id]':address,'Order[delivery_id]':delivery,'Order[payment_id]':pay})
+       $.post('place-order',{'Order[address_id]':address,'Order[delivery_id]':delivery,'Order[payment_id]':pay},function (data) {
+           var json = JSON.parse(data);
+           if(json.status){
+               //跳转到登录页
+               window.location.href="/order/pay-success";
+           }else {
+               alert('亲！你所选的商品库存不够');
+               window.location.href="/goods/show-cart";
+           }
+
+       })
     });
 
 </script>

@@ -67,11 +67,13 @@
         </tr>
         </thead>
         <tbody>
+        <?php $a=0?>
+        <?php $b=0?>
         <?php foreach ($goods as $good):?>
         <tr data-id="<?=$good['id']?>">
             <td class="col1"><a href=""><img src="<?=$good['LOGO']?>" alt="" /></a>  <strong><a href="good?id=<?=$good['id']?>"><?=$good['name']?></a></strong></td>
-            <td class="col3">￥<span><?=$good['shop_price']?></span></td>
-
+            <td class="col3">￥<span><?=$a=$good['shop_price']?></span></td>
+            <?php $b=$a+$b?>
          <td class="col4">
                 <a href="javascript:;" class="reduce_num"></a>
                 <input type="text" name="amount" value="<?=$carts[$good['id']]?>" class="amount"/>
@@ -127,7 +129,8 @@
 <!---购物车商品删除----->
 <script type="text/javascript">
     $(".goods_del").click(function () {
-        var goods_id = $(this).closest('tr').attr('data-id');
+        console.debug(222);
+        //var goods_id = $(this).closest('tr').attr('data-id');
         //console.log(goods_id);
         $.get('goods-del',{goods_id:goods_id},function (data) {
             console.debug(data);

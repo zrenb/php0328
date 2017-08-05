@@ -20,7 +20,7 @@
             <ul>
                 <li>您好，欢迎来到京西！[<a href="login.html">登录</a>] [<a href="register.html">免费注册</a>] </li>
                 <li class="line">|</li>
-                <li>我的订单</li>
+                <li><a href="<?=\yii\helpers\Url::to(['order/list'])?>">我的订单</a></li>
                 <li class="line">|</li>
                 <li>客户服务</li>
 
@@ -57,7 +57,7 @@
     <div class="success_bd">
         <p><span></span>订单提交成功，我们将及时为您处理</p>
 
-        <p class="message">完成支付后，你可以 <a href="">查看订单状态</a>  <a href="">继续购物</a> <a href="">问题反馈</a></p>
+        <p class="message">完成支付后，你可以 <a href="<?=\yii\helpers\Url::to(['order/list'])?>">查看订单状态</a>  <a href="">继续购物</a> <a href="">问题反馈</a></p>
     </div>
 </div>
 <!-- 主体部分 end -->
@@ -82,10 +82,10 @@
         © 2005-2013 京东网上商城 版权所有，并保留所有权利。  ICP备案证书号:京ICP证070359号
     </p>
     <p class="auth">
-        <a href=""><img src="images/xin.png" alt="" /></a>
-        <a href=""><img src="images/kexin.jpg" alt="" /></a>
-        <a href=""><img src="images/police.jpg" alt="" /></a>
-        <a href=""><img src="images/beian.gif" alt="" /></a>
+        <a href=""><img src="/images/xin.png" alt="" /></a>
+        <a href=""><img src="/images/kexin.jpg" alt="" /></a>
+        <a href=""><img src="/images/police.jpg" alt="" /></a>
+        <a href=""><img src="/images/beian.gif" alt="" /></a>
     </p>
 </div>
 <!-- 底部版权 end -->

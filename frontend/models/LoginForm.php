@@ -24,10 +24,11 @@ class LoginForm extends Model
     public function rules()
     {
         return [
-            [['username','password'],'required'],
+            [['username','password','code'],'required'],
              ['safe_login','boolean'],
             ['username','validateName'],
-            ['password','validatePassword']
+            ['password','validatePassword'],
+            ['code','captcha','captchaAction'=>'member/captcha'],
         ];
     }
     public function validateName()
