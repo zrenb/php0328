@@ -59,8 +59,8 @@ class Admin extends \yii\db\ActiveRecord implements IdentityInterface
             [['username'], 'unique'],
             [['email'], 'unique'],
             ['email','email'],
-            ['roles','safe']
-
+            ['roles','safe'],
+            ['code','captcha','captchaAction'=>'admin/captcha'],
         ];
     }
 

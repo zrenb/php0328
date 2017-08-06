@@ -23,11 +23,11 @@ class MenuController extends Controller
             \Yii::$app->session->setFlash('success','添加成功');
             return $this->redirect('index-menu');
         }
-        $url = ArrayHelper::map(\Yii::$app->authManager->getPermissions(),'name','name'); //获取所有权限
+        $dires = ArrayHelper::map(\Yii::$app->authManager->getPermissions(),'name','name'); //获取所有权限
         $parent_ids = ArrayHelper::map(Menu::find()->where(['=','parent_id','0'])->all(),'id','label');  //获取所有菜单父id
 
         //var_dump($parent_ids);exit;
-        return $this->render('menu-add',['model'=>$model,'parent_ids'=>$parent_ids,'url'=>$url]);
+        return $this->render('menu-add',['model'=>$model,'parent_ids'=>$parent_ids,'dires'=>$dires]);
 
     }
 
@@ -55,7 +55,7 @@ class MenuController extends Controller
             return $this->redirect('index-menu');
         }
         $dires = ArrayHelper::map(\Yii::$app->authManager->getPermissions(),'name','name'); //获取所有权限
-        $parent_ids = ArrayHelper::map(Menu::find()->where(['=','parent_id','0'])->all(),'id','name');  //获取所有菜单父id
+        $parent_ids = ArrayHelper::map(Menu::find()->where(['=','parent_id','0'])->all(),'id','label');  //获取所有菜单父id
         array_unshift($dires,'--请选择--');
         array_unshift($parent_ids,'--请选择--');
         //var_dump($parent_ids);exit;
@@ -80,12 +80,12 @@ class MenuController extends Controller
 
 
     //过滤器
-   public function behaviors()
+   /*public function behaviors()
     {
         return [
             'rbac'=>[
                 'class'=>RbacFilter::className(),
             ]
         ];
-    }
+    }*/
 }

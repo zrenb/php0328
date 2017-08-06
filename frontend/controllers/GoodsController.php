@@ -16,12 +16,12 @@ class GoodsController extends Controller
 {
     public $enableCsrfValidation=false;
     public $layout=false;
+    //首页
     public function actionIndex()
     {
-        $brands = Brand::find()->all();
         $categorys = GoodsCategory::find()->where(['=','parent_id',0])->all();
-        $goods = Goods::find()/*->where(['=','id','category_id'])*/->all();
-        return $this->render('index',['brands'=>$brands,'categorys'=>$categorys,'goods'=>$goods]);
+        $goods = Goods::find()->all();
+        return $this->render('index',['categorys'=>$categorys,'goods'=>$goods]);
     }
 
     public function actionGoodsList($category_id)
@@ -76,15 +76,6 @@ class GoodsController extends Controller
         //var_dump($good);
         return $this->render('good',['goodPices'=>$goodPices,'good'=>$good]);
     }
-
-
-
-
-
-
-
-
-
 
 
     //添加购物车
@@ -253,9 +244,11 @@ class GoodsController extends Controller
         {
             if(\Yii::$app->user->isGuest)
             {
-
+                unset($goods_id);
             }else{
                 //登录状态
+                $good = Cart::findOne(['goods_id'=>$goods_id]);
+                $good->delete();
             }
             return "删除成功";
         }else{
@@ -275,5 +268,15 @@ class GoodsController extends Controller
     public function actionCook(){
         $cook = \Yii::$app->request->cookies;
         var_dump(unserialize($cook->getValue('cat')));
+    }
+
+
+    public function actionRedis()
+    {
+        $redis = new \Redis();
+        $redis->connect('127.0.0.1');
+        $a = $redis->set(1,'00');
+        var_dump($a);
+
     }
 }

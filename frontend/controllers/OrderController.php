@@ -18,7 +18,6 @@ class OrderController extends Controller
     public $enableCsrfValidation=false;
     public $layout=false;
     public function actionGoodsList(){
-
         if(\Yii::$app->user->isGuest){
             return $this->redirect(['member/login-member']);
         }
@@ -31,16 +30,9 @@ class OrderController extends Controller
         $goods_ids = Cart::find()->select('goods_id')->where(['=','member_id',$member_id])->column();          //购物车数据
         $goods = Goods::find()->where(['in','id',$goods_ids])->all();
         //var_dump($goods);exit;
-
-
-
-
         return $this->render('order-list',['addresses'=>$addresses,'deliveries'=>$deliveries,'paymentes'=>$paymentes,'carts'=>$carts,'goods'=>$goods]);
 
-
-
     }
-
 
     public function actionPlaceOrder()
     {
@@ -78,7 +70,7 @@ class OrderController extends Controller
                         $order->payment_name=Order::$paymentes[$order->payment_id]['name'];
                         //订单总额
                         $order->total=$good->shop_price*$good->cart->amount;
-                        $order->status='0';
+                        $order->status='1';
                         $order->create_time=time();
                         $order->save();
                         //var_dump($order->getErrors());
@@ -113,14 +105,16 @@ class OrderController extends Controller
             return Json::encode(['status' => true, 'msg' => '交易成功']);
         }
     }
+    //订单提交跳转
     public function actionPaySuccess(){
         return $this->render('success');
     }
     public function actionList()
     {
         $member_id = \Yii::$app->user->id;
-        $model = new Order();
-        $goods = Order::find()->where(['=','member_id',$member_id])->all();
-        var_dump($goods);
+        //根据用户查出用户对应的订单
+        $order = Order::findOne(['member_id'=>$member_id]);
+        $goods = OrderGoods::find()->where(['=','order_id',$order->id])->all();
+        return $this->render('goods-list',['goods'=>$goods]);
     }
 }

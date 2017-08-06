@@ -23,7 +23,7 @@
         </div>
         <div class="topnav_right fr">
             <ul>
-                <li>您好，欢迎来到京西！[<a href="<?=\yii\helpers\Url::to(['member/login-member'])?>">登录</a>] [<a href="<?=\yii\helpers\Url::to(['member/regist-member'])?>">免费注册</a>] </li>
+                <li id="user_info">您好，欢迎来到京西！[<a href="">登录</a>] [<a href="">免费注册</a>] </li>
                 <li class="line">|</li>
                 <li>我的订单</li>
                 <li class="line">|</li>
@@ -79,7 +79,7 @@
                     <div class="uclist mt10">
                         <ul class="list1 fl">
                             <li><a href="">用户信息></a></li>
-                            <li><a href="<?=\yii\helpers\Url::to(['order/list'])?>">我的订单></a></li>
+                            <li><a href="">我的订单></a></li>
                             <li><a href="<?=\yii\helpers\Url::to(['member/address-index'])?>">收货地址></a></li>
                             <li><a href="">我的收藏></a></li>
                         </ul>
@@ -138,7 +138,7 @@
             <div class="cat_bd">
                 <?php foreach ($categorys as $category):?>
                     <div class="cat item1">
-                        <h3><a href="goods-list?category_id=<?=$category->id?>"><?= $category->name?></a> <b></b></h3>
+                        <h3><a href="<?=Yii::getAlias('@frontend/controllers/goods-controller/goods-list')?>?category_id=<?=$category->id?>"><?= $category->name?></a> <b></b></h3>
                         <div class="cat_detail">
                             <?php foreach ($category->children as $children):?>
                                 <dl class="dl_1st">
@@ -725,6 +725,16 @@
     </p>
 </div>
 <!-- 底部版权 end -->
+<script>
+    //获取用户登录信息，更新用户登录栏
+    $.getJSON('http://www.yii2shop.com/member/user-info',function (data) {
+       // console.debug(data.user.username);
+        if(data.isGuest == false){
+           // console.debug(data.user.username);
+            $("#user_info").html('欢迎'+ data.user.username+ "来到小红书。<a>[注销]<a/>")
+        }
+    })
+</script>
 
 </body>
 </html>

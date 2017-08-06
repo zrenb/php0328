@@ -129,12 +129,12 @@
 <!---购物车商品删除----->
 <script type="text/javascript">
     $(".goods_del").click(function () {
-        console.debug(222);
-        //var goods_id = $(this).closest('tr').attr('data-id');
-        //console.log(goods_id);
+        var goods_id = $(this).closest('tr').attr('data-id');
+        console.log(goods_id);
         $.get('goods-del',{goods_id:goods_id},function (data) {
             console.debug(data);
-        })
+        });
+        $(this).closest('tr').remove();
     })
 </script>
 
