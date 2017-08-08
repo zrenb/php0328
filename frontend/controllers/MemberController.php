@@ -79,7 +79,7 @@ class MemberController extends \yii\web\Controller
     {
         return Json::encode([
             'isGuest'=>\Yii::$app->user->isGuest,
-            'username'=>\Yii::$app->user->identity,
+            'user'=>\Yii::$app->user->identity,
         ]);
     }
 
@@ -190,27 +190,28 @@ class MemberController extends \yii\web\Controller
     //收货地址修改
     public function actionAddressEdit($id)
     {
-        $model = new Abres();
-       $address = Abres::findOne(['id'=>$id]);
 
-       if($model->load(\Yii::$app->request->post()))
-       {
-          if($model->validate())
-          {
-              $model->save();
-              return Json::encode(['status'=>true,'msg'=>'修改成功']);
-          }else{
-              return Json::encode(['status'=>false,'msg'=>$model->getErrors()]);
-          }
-       }
-
-
+        $address = Abres::findOne(['id'=>$id]);
+       /* if(!$address){
+            return json_encode(['status'=>'error','msg'=>'地址不存在['.$id.']']);
+        }*/
+        if($address->load(\Yii::$app->request->post()))
+        {
+              // var_dump(\Yii::$app->request->post());exit;
+              if($address->validate())
+              {
+                  $address->save();
+                  return Json::encode(['status'=>true,'msg'=>'修改成功']);
+              }else{
+                  return Json::encode(['status'=>false,'msg'=>$address->getErrors()]);
+              }
+        }
 
        if($address == null)
        {
            throw new NotFoundHttpException('warning','你修改的地址不存在');
        }
-       return $this->render('edit-address',['model'=>$model,'address'=>$address]);
+       return $this->render('edit-address',['address'=>$address]);
     }
 
 

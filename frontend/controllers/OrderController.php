@@ -24,6 +24,11 @@ class OrderController extends Controller
         $member_id = \Yii::$app->user->id;
         //var_dump($member_id);exit;
         $addresses = Abres::find()->where(['=','user_id',$member_id])->all();       //收货地址
+        if($addresses == null)
+        {
+            \Yii::$app->session->setFlash('warning','亲！您还没有收货地址，请添加收货地址');
+            return $this->redirect(['member/address-index']);
+        }
         $deliveries = Order::$deliveries;                                           //配送方式
         $paymentes = Order::$paymentes;                                             //支付方式
         $carts = Cart::find()->where(['=','member_id',$member_id])->all();

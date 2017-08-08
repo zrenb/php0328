@@ -24,7 +24,7 @@
         </div>
         <div class="topnav_right fr">
             <ul>
-                <li>您好，欢迎来到京西！[<a href="login.html">登录</a>] [<a href="register.html">免费注册</a>] </li>
+                <li id="user_info">您好，欢迎来到京西！[<a href="login.html">登录</a>] [<a href="register.html">免费注册</a>] </li>
                 <li class="line">|</li>
                 <li>我的订单</li>
                 <li class="line">|</li>
@@ -47,8 +47,8 @@
         <div class="search fl">
             <div class="search_form">
                 <div class="form_left fl"></div>
-                <form action="" name="serarch" method="get" class="fl">
-                    <input type="text" class="txt" value="请输入商品关键字" /><input type="submit" class="btn" value="搜索" />
+                <form action="<?=\yii\helpers\Url::to(['goods/goods-list'])?>" name="serarch" method="get" class="fl">
+                    <input type="text" class="txt" value="请输入商品关键字" name="keyword" /><input type="submit" class="btn" value="搜索" />
                 </form>
                 <div class="form_right fl"></div>
             </div>
@@ -817,7 +817,16 @@
     </p>
 </div>
 <!-- 底部版权 end -->
-
+    <script>
+        //获取用户登录信息，更新用户登录栏
+        $.getJSON('/member/user-info',function (data) {
+            // console.debug(data.user.username);
+            if(data.isGuest == false){
+                // console.debug(data.user.username);
+                $("#user_info").html('欢迎'+ data.user.username+ "来到小红书。<a>[注销]<a/>")
+            }
+        })
+    </script>
 
 </body>
 </html>

@@ -25,7 +25,7 @@
         </div>
         <div class="topnav_right fr">
             <ul>
-                        <li>您好，欢迎来到京西！[<a href="<?=\yii\helpers\Url::to(['member/login-member'])?>">登录</a>] [<a href="<?=\yii\helpers\Url::to(['member/regist-member'])?>">免费注册</a>] </li>
+                        <li id="user_info">您好，欢迎来到京西！[<a href="<?=\yii\helpers\Url::to(['member/login-member'])?>">登录</a>] [<a href="<?=\yii\helpers\Url::to(['member/regist-member'])?>">免费注册</a>] </li>
                         <li class="line">|</li>
                         <li>我的订单</li>
                         <li class="line">|</li>
@@ -471,7 +471,7 @@
             <?php $form=\yii\widgets\ActiveForm::begin(['id'=>'address'])?>
             <ul>
                 <li>
-                    <input type="hidden" name="Abres[name]" class="txt" value="<?=$address->user_id?>"/>
+                    <input type="hidden" id='aid'  name="Abres[id]" class="txt" value="<?=$address->id?>"/>
                     <p></p>
                 </li>
                 <li id="name">
@@ -666,7 +666,8 @@
     $(".btn").click(function(){
         //清除错误信息
         $("#address p").text("");
-        $.post('/member/adres/',$("#address").serialize(),function(data){
+        var id = $('#aid').val();
+        $.post('/member/address-edit?id='+id,$("#address").serialize(),function(data){
             console.log(data);
             var json = JSON.parse(data);
             console.log(json);
@@ -692,7 +693,14 @@
         });
     });
 
-
+    //获取用户登录信息，更新用户登录栏
+    $.getJSON('/member/user-info',function (data) {
+        // console.debug(data.user.username);
+        if(data.isGuest == false){
+            // console.debug(data.user.username);
+            $("#user_info").html('欢迎'+ data.user.username+ "来到小红书。<a>[注销]<a/>")
+        }
+    })
 
 </script>
 </body>

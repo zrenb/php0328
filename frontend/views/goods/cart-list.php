@@ -22,7 +22,7 @@
         </div>
         <div class="topnav_right fr">
             <ul>
-                <li>[<a href="login.html">登录</a>][<a href="<?=\yii\helpers\Url::to(['member/logout'])?>">安全退出</a>] [<a href="register.html">免费注册</a>] </li>
+                <li id="user_info">[<a href="login.html">登录</a>][<a href="<?=\yii\helpers\Url::to(['member/logout'])?>">安全退出</a>] [<a href="register.html">免费注册</a>] </li>
                 <li class="line">|</li>
                 <li>我的订单</li>
                 <li class="line">|</li>
@@ -76,7 +76,7 @@
             <?php $b=$a+$b?>
          <td class="col4">
                 <a href="javascript:;" class="reduce_num"></a>
-                <input type="text" name="amount" value="<?=$carts[$good['id']]?>" class="amount"/>
+                <input type="text" name="amount" value="<?=$carts[$good['id']]?>" class="amount"/>                          <!-<?=$carts[$good['id']]?>---->
                 <a href="javascript:;" class="add_num"></a>
             </td>
 
@@ -136,6 +136,17 @@
         });
         $(this).closest('tr').remove();
     })
+
+
+    //获取用户登录信息，更新用户登录栏
+    $.getJSON('http://www.yii2shop.com/member/user-info',function (data) {
+        // console.debug(data.user.username);
+        if(data.isGuest == false){
+            // console.debug(data.user.username);
+            $("#user_info").html('欢迎'+ data.user.username+ "来到小红书。<a>[注销]<a/>")
+        }
+    })
+
 </script>
 
 <!---商品删除底部----->

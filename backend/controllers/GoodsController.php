@@ -2,6 +2,7 @@
 
 namespace backend\controllers;
 
+use backend\components\SphinxClient;
 use backend\filters\RbacFilter;
 use backend\models\Brand;
 use backend\models\GoodDayCount;
@@ -76,11 +77,9 @@ class GoodsController extends Controller
         public function actionIndex()
             {
                 $goodSearchForm = new GoodSearchForm();
-
-
                 $query=Goods::find();
-                $goodSearchForm->load(\Yii::$app->request->get());
-                if($goodSearchForm->name)
+               $goodSearchForm->search($query);
+                /*if($goodSearchForm->name)         //封装到模型
                 {
                     $query->andWhere(['like','name',$goodSearchForm->name])->orderBy(['sort'=>'desc']);
                 }
@@ -95,7 +94,7 @@ class GoodsController extends Controller
                 if($goodSearchForm->is_on_sale)
                 {
                     $query->andWhere(['like','is_on_sale',$goodSearchForm->is_on_sale])->orderBy(['sort'=>'desc']);
-                }
+                }*/
 
                 ////分页
 
@@ -292,15 +291,38 @@ class GoodsController extends Controller
         ];
     }
    //过滤器
-   /* public function behaviors()
+    public function behaviors()
     {
         return [
             'rbac'=>[
                 'class'=>RbacFilter::className(),
-                'except'=>['pindex','pic','pdel'],
+                'only'=>['add','index'],
             ]
         ];
-    }*/
+    }
 
+
+    //搜索测试
+    public function actionSou()
+    {
+
+        //$cl = new SphinxClient ();
+        $cl = new SphinxClient();
+        $cl->SetServer ( '127.0.0.1', 9312);
+//$cl->SetServer ( '10.6.0.6', 9312);
+//$cl->SetServer ( '10.6.0.22', 9312);
+//$cl->SetServer ( '10.8.8.2', 9312);
+        //$cl->SetConnectTimeout ( 10 );
+        $cl->SetArrayResult ( true );
+// $cl->SetMatchMode ( SPH_MATCH_ANY);
+        $cl->SetMatchMode ( SPH_MATCH_EXTENDED2);   //匹配模式
+        $cl->SetLimits(0, 1000);
+        $info = '黑色版';
+        $res = $cl->Query($info, 'goods');//shopstore_search
+//print_r($cl);
+        echo "<pre>";
+        print_r($res);
+
+    }
 
 }

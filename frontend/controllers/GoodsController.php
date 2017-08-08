@@ -2,12 +2,18 @@
 
 namespace frontend\controllers;
 
+use backend\components\SphinxClient;
 use backend\models\Brand;
 use backend\models\Goods;
 use backend\models\GoodsCategory;
+use backend\models\GoodSearchForm;
 use backend\models\GoodsPic;
+use EasyWeChat\Foundation\Application;
+use EasyWeChat\Payment\Order;
 use frontend\models\Cart;
+use frontend\models\GoodsSearchForm;
 use yii\helpers\ArrayHelper;
+use yii\helpers\Json;
 use yii\web\Controller;
 use yii\web\Cookie;
 use backend\models\GoodsGallery;
@@ -20,20 +26,48 @@ class GoodsController extends Controller
     public function actionIndex()
     {
         $categorys = GoodsCategory::find()->where(['=','parent_id',0])->all();
-        $goods = Goods::find()->all();
-        return $this->render('index',['categorys'=>$categorys,'goods'=>$goods]);
+        return $this->render('index',['categorys'=>$categorys]);
     }
 
-    public function actionGoodsList($category_id)
+    public function actionSearch()
     {
-        //var_dump($category_id);exit;
+        //接收搜索传过来的数据
+        $keywords = \Yii::$app->request->get('keyword');
+        $query = Goods::find();
+        if($keywords)
+        {
+            $cl = new SphinxClient();
+            $cl->SetServer ( '127.0.0.1', 9312);
+            $cl->SetArrayResult ( true );
+            $cl->SetMatchMode ( SPH_MATCH_EXTENDED2);   //匹配模式
+            $cl->SetLimits(0, 1000);    //查询条数
+            $info = $keywords;
+            $res = $cl->Query($info, 'goods');
+            if(isset($res['matches'])){
+                $ids = ArrayHelper::getColumn($res['matches'],'id');
+                $query->where(['in','id',$ids]);
+            }else{
+                $query->where(['id'=>0]);
+                return ;
+            }
+            $goods=$query->all();
+            return $this->render('goods-list',['goods'=>$goods]);
+        }
 
+    }
+
+
+
+
+
+    public function actionGoodsList()
+    {
+        $category_id=\Yii::$app->request->get('category_id');
         $cate = GoodsCategory::findOne(['id'=>$category_id]);
 
         if($cate->depth == 0)
         {
             /*////分页
-
             $total = $query->count();
             $pageSize = 5;
             ////分页工具类
@@ -163,9 +197,12 @@ class GoodsController extends Controller
 
         }else{
 
-            //////////////////////////////////////////登录数据表/////////////////////////////////////////////////////////
-            $goods_ids = Cart::find()->select('goods_id')->asArray()->column();
+            //////////////////////////////////////////登录数据表////////////////////////////////////////////////////////
+            $member_id = \Yii::$app->user->id;
+            //var_dump($member_id);exit;
+            $goods_ids = Cart::find()->select('goods_id')->where(['=','member_id',$member_id])->asArray()->column();
             $carts = Cart::find()->asArray()->all();
+
             //var_dump($goods_ids);exit;
             $goods = Goods::find()->where(['in','id',$goods_ids])->all();
             $carts = ArrayHelper::map($carts,'goods_id','amount');
@@ -277,6 +314,42 @@ class GoodsController extends Controller
         $redis->connect('127.0.0.1');
         $a = $redis->set(1,'00');
         var_dump($a);
+
+    }
+    //微信支付
+    public function actionPay($order=null)
+    {
+        $options=\Yii::$app->params['wechat'];
+        $app = new Application($options);
+        $payment = $app->payment;
+
+        //生成一个微信支付订单
+        $attributes = [
+            'trade_type'       => 'JSAPI', // JSAPI，NATIVE，APP...
+            'body'             => 'iPad mini 16G 白色',
+            'detail'           => 'iPad mini 16G 白色',
+            'out_trade_no'     => '1217752501201407033233368018',
+            'total_fee'        => 5388, // 单位：分
+            'notify_url'       => 'http://www.yii2shop.com/site/notify', // 支付结果通知网址，如果不设置则会使用配置里的默认地址
+            //'openid'           => '当前用户的 openid', // trade_type=JSAPI，此参数必传，用户在商户appid下的唯一标识，
+            // ...
+        ];
+        $order = new Order($attributes);
+
+
+        //调统一下单api
+        //返回一个code_url链接
+        //将返回的code_url生成有个二维码
+        $result = $payment->prepare($order);
+        if ($result->return_code == 'SUCCESS' && $result->result_code == 'SUCCESS'){
+            $prepayId = $result->prepay_id;
+        }
+        var_dump($result);
+
+    }
+
+    //微信返回提示信息
+    public function actionBcak(){
 
     }
 }
